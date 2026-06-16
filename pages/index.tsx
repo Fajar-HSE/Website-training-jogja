@@ -664,9 +664,15 @@ export default function Home() {
         <footer className="bg-slate-950 text-slate-400 py-16 border-t border-white/5">
           <div className="mx-auto max-w-7xl px-6 grid gap-12 lg:grid-cols-4">
             <div>
-              <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                <span className="text-accent-500">◆</span> HSE SkillUp
-              </h3>
+              <div className="mb-4">
+                <Image
+                  src="/images/logo.png"
+                  alt="HSE SkillUp"
+                  width={120}
+                  height={40}
+                  className="object-contain h-10 w-auto brightness-0 invert"
+                />
+              </div>
               <p className="mt-4 text-sm leading-relaxed text-slate-400">
                 Mitra penasihat risiko strategis dan kepatuhan regulasi K3 serta lingkungan untuk memastikan operasi bisnis terlindungi, aman, dan berkelanjutan.
               </p>
