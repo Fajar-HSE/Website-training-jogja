@@ -1,0 +1,22 @@
+# Next.js build and development artifacts
+node_modules/
+.next/
+out/
+build/
+
+# Local env files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# WordPress Integration Files (Excluded from Git tracking)
+lib/wordpress.ts
+pages/resource-center.tsx
+pages/resource-center/
