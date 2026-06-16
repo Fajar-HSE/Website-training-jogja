@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 
 const navItems = [
   { label: 'Beranda', href: '/' },
@@ -42,8 +43,19 @@ export default function Header() {
         : 'bg-primary-900/90 border-white/5 shadow-lg shadow-slate-950/10 backdrop-blur-xl'
     }`}>
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <Link href="/" className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-          <span className="text-accent-500">◆</span> HSE SkillUp
+        <Link href="/" className="flex items-center gap-3">
+          <div className="relative h-10 w-10 overflow-hidden bg-white/10 rounded-lg flex items-center justify-center p-0.5">
+            <Image
+              src="/images/logo.png"
+              alt="HSE SkillUp Logo"
+              width={40}
+              height={40}
+              className="object-contain"
+            />
+          </div>
+          <span className="text-xl font-bold tracking-tight text-white">
+            HSE <span className="text-teal-400">SkillUp</span>
+          </span>
         </Link>
         {/* Desktop Navigation */}
         <div className="hidden items-center gap-8 md:flex">
