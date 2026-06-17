@@ -14,19 +14,19 @@ export type GQLTrainingCard = {
   featuredImage: {
     node: { sourceUrl: string; altText: string }
   } | null
-  trainingFields: {
+  trainingFields?: {
     durasi: string | null
     sertifikasi: string | null
     level: string | null
     harga: string | null
   } | null
-  certifications: { nodes: Array<{ name: string; slug: string }> }
-  sectors: { nodes: Array<{ name: string; slug: string }> }
+  certifications?: { nodes: Array<{ name: string; slug: string }> }
+  sectors?: { nodes: Array<{ name: string; slug: string }> }
 }
 
 export type GQLTrainingDetail = GQLTrainingCard & {
   content: string
-  trainingFields: {
+  trainingFields?: {
     durasi: string | null
     sertifikasi: string | null
     level: string | null
@@ -46,22 +46,23 @@ export type GQLTrainingDetail = GQLTrainingCard & {
     canonical: string
   } | null
 }
+  seo?: {
+    title: string
+    metaDesc: string
+    opengraphTitle: string
+    opengraphDescription: string
+    opengraphImage: { sourceUrl: string } | null
+    canonical: string
+  } | null
+}
 
 // ─── Queries ──────────────────────────────────────────────────────────────────
 
 export const GET_TRAININGS = /* GraphQL */ `
-  query GetTrainings($first: Int = 20, $sector: String, $certification: String) {
+  query GetTrainings($first: Int = 20) {
     trainings(
       first: $first
-      where: {
-        taxQuery: {
-          taxArray: [
-            { taxonomy: SECTOR, terms: [$sector], operator: IN, field: SLUG }
-            { taxonomy: CERTIFICATION, terms: [$certification], operator: IN, field: SLUG }
-          ]
-        }
-        status: PUBLISH
-      }
+      where: { status: PUBLISH }
     ) {
       nodes {
         id
@@ -71,14 +72,6 @@ export const GET_TRAININGS = /* GraphQL */ `
         featuredImage {
           node { sourceUrl altText }
         }
-        trainingFields {
-          durasi
-          sertifikasi
-          level
-          harga
-        }
-        certifications { nodes { name slug } }
-        sectors { nodes { name slug } }
       }
     }
   }
@@ -95,19 +88,6 @@ export const GET_TRAINING_BY_SLUG = /* GraphQL */ `
       featuredImage {
         node { sourceUrl altText }
       }
-      trainingFields {
-        durasi
-        sertifikasi
-        level
-        harga
-        jadwal
-        materi
-        syarat
-        manfaat
-        targetPeserta
-      }
-      certifications { nodes { name slug } }
-      sectors { nodes { name slug } }
       seo {
         title
         metaDesc

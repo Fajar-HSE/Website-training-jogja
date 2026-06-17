@@ -12,7 +12,7 @@ export type GQLSolutionCard = {
   featuredImage: {
     node: { sourceUrl: string; altText: string }
   } | null
-  solutionFields: {
+  solutionFields?: {
     tagline: string | null
     icon: string | null
   } | null
@@ -20,7 +20,7 @@ export type GQLSolutionCard = {
 
 export type GQLSolutionDetail = GQLSolutionCard & {
   content: string
-  solutionFields: {
+  solutionFields?: {
     tagline: string | null
     icon: string | null
     manfaat: string | null
@@ -49,10 +49,6 @@ export const GET_SOLUTIONS = /* GraphQL */ `
         featuredImage {
           node { sourceUrl altText }
         }
-        solutionFields {
-          tagline
-          icon
-        }
       }
     }
   }
@@ -68,14 +64,6 @@ export const GET_SOLUTION_BY_SLUG = /* GraphQL */ `
       content
       featuredImage {
         node { sourceUrl altText }
-      }
-      solutionFields {
-        tagline
-        icon
-        manfaat
-        proses
-        regulasiTerkait
-        industri
       }
       seo {
         title
