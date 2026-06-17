@@ -4,7 +4,7 @@ node_modules/
 out/
 build/
 
-# Local env files
+# Local env files — JANGAN commit ke repo
 .env.local
 .env.development.local
 .env.test.local
@@ -16,7 +16,5 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# WordPress Integration Files (Excluded from Git tracking)
-lib/wordpress.ts
-pages/resource-center.tsx
-pages/resource-center/
+# Test endpoint — hapus sebelum production
+pages/api/test-graphql.ts

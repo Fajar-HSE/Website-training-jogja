@@ -415,11 +415,27 @@ Hindari:
 
 ### Optimization Strategy
 
-* ISR
-* SSG
-* CDN
-* Lazy loading
-* Image optimization
+* ISR (Incremental Static Regeneration) untuk konten semi-dinamis
+* SSG (Static Site Generation) untuk konten evergreen
+* On-Demand Revalidation via WordPress webhook saat publish/update
+* CDN (Cloudflare) untuk static assets dan edge caching
+* Lazy loading untuk gambar dan komponen non-critical
+* Image optimization via Next Image
+* GraphQL fragments untuk membatasi data yang diambil per halaman
+* Persisted queries untuk mengurangi beban server WordPress
+
+### Content Rendering Matrix
+
+| Tipe Konten              | Strategi | Revalidasi        |
+| ------------------------ | -------- | ----------------- |
+| Halaman Solusi           | SSG      | On-Demand         |
+| Halaman Industri         | SSG      | On-Demand         |
+| Glossary / FAQ           | SSG      | On-Demand         |
+| Artikel                  | ISR      | 6 jam             |
+| Regulasi                 | ISR      | 6 jam             |
+| Studi Kasus              | ISR      | 12 jam            |
+| Beranda                  | ISR      | 1 jam             |
+| Search / Form Konsultasi | CSR      | Realtime          |
 
 ---
 

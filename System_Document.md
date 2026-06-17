@@ -29,10 +29,12 @@ Untuk mengatasi masalah tersebut, website akan direstrukturisasi menggunakan ars
 
 ## Proposed Solution
 
-* Frontend menggunakan Next.js
-* Backend CMS tetap menggunakan WordPress
+* Frontend menggunakan Next.js dengan strategi rendering ISR dan On-Demand Revalidation
+* Backend CMS tetap menggunakan WordPress (Headless)
 * WordPress berfungsi sebagai content management system
-* Frontend mengambil data melalui REST API
+* Frontend mengambil data melalui **GraphQL API (WPGraphQL)**
+* Konten dibagi menjadi **evergreen** (SSG/ISR) dan **dinamis** (SSR/On-Demand Revalidation)
+* Query GraphQL dibatasi hanya pada field yang dibutuhkan per halaman
 
 ---
 
@@ -692,6 +694,24 @@ Pengguna harus dapat memfilter:
 * INP < 200 ms
 * CLS < 0.1
 
+### Rendering Strategy
+
+| Tipe Halaman              | Strategi          | Revalidasi         |
+| ------------------------- | ----------------- | ------------------ |
+| Beranda                   | ISR               | 1 jam              |
+| Artikel / Regulasi        | ISR               | 6 jam              |
+| Halaman Solusi & Program  | SSG (evergreen)   | On-Demand          |
+| Halaman Industri          | SSG (evergreen)   | On-Demand          |
+| Glossary / FAQ            | SSG (evergreen)   | On-Demand          |
+| Studi Kasus               | ISR               | 12 jam             |
+| Form Konsultasi / Search  | CSR               | Realtime           |
+
+### Data Fetching
+
+* Gunakan **GraphQL fragments** per komponen untuk membatasi data yang diambil
+* Tidak mengambil field yang tidak dirender di halaman tersebut
+* Gunakan **On-Demand Revalidation** via webhook WordPress saat konten dipublish/diupdate
+
 ---
 
 ## Availability
@@ -830,7 +850,7 @@ Dashboard harus menampilkan:
 
 ## Existing Systems
 
-* WordPress CMS
+* WordPress CMS (Headless via WPGraphQL)
 * WhatsApp Business
 * CRM
 
@@ -872,21 +892,25 @@ Hak akses penuh.
 
 # 18. Risks
 
-| Risk                  | Impact | Mitigation     |
-| --------------------- | ------ | -------------- |
-| Traffic turun         | Tinggi | Redirect 301   |
-| API gagal             | Sedang | Caching        |
-| Shared hosting lambat | Tinggi | Cloudflare CDN |
-| Konten duplikat       | Tinggi | Canonical URL  |
+| Risk                  | Impact | Mitigation                        |
+| --------------------- | ------ | --------------------------------- |
+| Traffic turun         | Tinggi | Redirect 301                      |
+| API gagal             | Sedang | ISR cache + fallback stale pages  |
+| GraphQL query lambat  | Sedang | Fragment optimization + persisted queries |
+| Shared hosting lambat | Tinggi | Cloudflare CDN + GraphQL caching  |
+| Konten duplikat       | Tinggi | Canonical URL                     |
+| Cache stale           | Sedang | On-Demand Revalidation via webhook |
 
 ---
 
 # 19. Assumptions
 
 * WordPress tetap digunakan
-* Shared hosting tetap dipertahankan
+* WordPress dikonfigurasi dengan WPGraphQL dan WPGraphQL for ACF
+* Shared hosting tetap dipertahankan (WordPress hanya sebagai CMS, bukan serving traffic)
 * Tim marketing mengelola konten
 * Frontend dihosting di Vercel
+* On-Demand Revalidation dikonfigurasi via WordPress webhook ke Vercel Revalidation API
 
 ---
 
