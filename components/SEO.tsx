@@ -51,7 +51,7 @@ type SEOProps = {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const SITE_URL = 'https://training-jogja.com'
+const SITE_URL = 'https://www.training-jogja.com'
 const SITE_NAME = 'Training Jogja'
 const ORG_PHONE = '+62-274-000-0000'
 const ORG_ADDRESS = {
@@ -76,7 +76,17 @@ export default function SEO({
   noindex = false,
 }: SEOProps) {
   const router = useRouter()
-  const canonicalUrl = canonical || `${SITE_URL}${router.asPath.split('?')[0]}`
+  
+  // Normalisasi canonical jika dikirim dari WordPress/Yoast yang mungkin menggunakan Vercel domain
+  let finalCanonical = canonical || `${SITE_URL}${router.asPath.split('?')[0]}`
+  if (finalCanonical.includes('website-training-jogja.vercel.app')) {
+    finalCanonical = finalCanonical.replace(/https?:\/\/website-training-jogja\.vercel\.app/g, 'https://www.training-jogja.com')
+  } else if (finalCanonical.startsWith('https://training-jogja.com')) {
+    // Pastikan menggunakan www
+    finalCanonical = finalCanonical.replace('https://training-jogja.com', 'https://www.training-jogja.com')
+  }
+
+  const canonicalUrl = finalCanonical
   const ogImageFull = ogImage.startsWith('http') ? ogImage : `${SITE_URL}${ogImage}`
 
   // ── 1. Organization schema ─────────────────────────────────────────────────

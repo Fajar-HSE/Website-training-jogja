@@ -78,13 +78,22 @@ function getEmbeddedTerms(embedded?: WPEmbedded, index = 0) {
 
 function buildSEO(yoast?: YoastSEO) {
   if (!yoast) return null
+  
+  // Ambil canonical URL dari Yoast
+  let canonical = yoast.canonical ?? ''
+  
+  // Jika canonical URL mengarah ke domain Vercel, arahkan ke domain utama (www.training-jogja.com)
+  if (canonical.includes('website-training-jogja.vercel.app')) {
+    canonical = canonical.replace(/https?:\/\/website-training-jogja\.vercel\.app/g, 'https://www.training-jogja.com')
+  }
+
   return {
     title: yoast.title ?? '',
     metaDesc: yoast.description ?? '',
     ogTitle: yoast.og_title ?? '',
     ogDescription: yoast.og_description ?? '',
     ogImage: yoast.og_image?.[0]?.url ?? null,
-    canonical: yoast.canonical ?? '',
+    canonical: canonical,
   }
 }
 
