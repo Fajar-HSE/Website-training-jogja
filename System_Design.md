@@ -61,7 +61,7 @@ Membangun ulang website Training Jogja menjadi platform digital B2B yang berfung
 * WordPress (Headless CMS)
 * Advanced Custom Fields Pro
 * Custom Post Type UI
-* WPGraphQL
+* WordPress REST API
 * Yoast SEO / Rank Math
 
 ### Infrastructure
@@ -89,7 +89,7 @@ Cloudflare CDN
   ▼
 Next.js Frontend (Vercel)
   │
-  ├── GraphQL API
+  ├── REST API
   │
   ▼
 WordPress Headless CMS
@@ -421,8 +421,8 @@ Hindari:
 * CDN (Cloudflare) untuk static assets dan edge caching
 * Lazy loading untuk gambar dan komponen non-critical
 * Image optimization via Next Image
-* GraphQL fragments untuk membatasi data yang diambil per halaman
-* Persisted queries untuk mengurangi beban server WordPress
+* Parameter `_fields` untuk membatasi data yang diambil per halaman
+* Edge caching untuk mengurangi beban server WordPress
 
 ### Content Rendering Matrix
 
@@ -526,7 +526,7 @@ CRM
 
 * WordPress setup
 * CPT development
-* GraphQL setup
+* REST API endpoints configuration
 
 ### Phase 4
 

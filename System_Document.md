@@ -32,9 +32,9 @@ Untuk mengatasi masalah tersebut, website akan direstrukturisasi menggunakan ars
 * Frontend menggunakan Next.js dengan strategi rendering ISR dan On-Demand Revalidation
 * Backend CMS tetap menggunakan WordPress (Headless)
 * WordPress berfungsi sebagai content management system
-* Frontend mengambil data melalui **GraphQL API (WPGraphQL)**
+* Frontend mengambil data melalui **WordPress REST API**
 * Konten dibagi menjadi **evergreen** (SSG/ISR) dan **dinamis** (SSR/On-Demand Revalidation)
-* Query GraphQL dibatasi hanya pada field yang dibutuhkan per halaman
+* Endpoint REST API dibatasi atau menggunakan query params `_fields` untuk membatasi data yang dikembalikan per halaman
 
 ---
 
@@ -100,7 +100,7 @@ Untuk mengatasi masalah tersebut, website akan direstrukturisasi menggunakan ars
 * WordPress (Headless CMS)
 * Advanced Custom Fields Pro
 * Custom Post Type UI
-* WPGraphQL
+* WordPress REST API
 * Yoast SEO / Rank Math
 
 ### Infrastructure
@@ -128,7 +128,7 @@ Cloudflare CDN
     ▼
 Next.js Frontend (Vercel)
     │
-    ├── GraphQL API
+    ├── REST API
     │
     ▼
 WordPress Headless CMS
@@ -708,7 +708,7 @@ Pengguna harus dapat memfilter:
 
 ### Data Fetching
 
-* Gunakan **GraphQL fragments** per komponen untuk membatasi data yang diambil
+* Gunakan query parameter `_fields` pada pemanggilan REST API per komponen untuk membatasi data yang diambil
 * Tidak mengambil field yang tidak dirender di halaman tersebut
 * Gunakan **On-Demand Revalidation** via webhook WordPress saat konten dipublish/diupdate
 
@@ -850,7 +850,7 @@ Dashboard harus menampilkan:
 
 ## Existing Systems
 
-* WordPress CMS (Headless via WPGraphQL)
+* WordPress CMS (Headless via REST API)
 * WhatsApp Business
 * CRM
 
@@ -896,8 +896,8 @@ Hak akses penuh.
 | --------------------- | ------ | --------------------------------- |
 | Traffic turun         | Tinggi | Redirect 301                      |
 | API gagal             | Sedang | ISR cache + fallback stale pages  |
-| GraphQL query lambat  | Sedang | Fragment optimization + persisted queries |
-| Shared hosting lambat | Tinggi | Cloudflare CDN + GraphQL caching  |
+| REST API query lambat | Sedang | Parameter `_fields` optimization |
+| Shared hosting lambat | Tinggi | Cloudflare CDN + REST API caching |
 | Konten duplikat       | Tinggi | Canonical URL                     |
 | Cache stale           | Sedang | On-Demand Revalidation via webhook |
 
@@ -906,7 +906,7 @@ Hak akses penuh.
 # 19. Assumptions
 
 * WordPress tetap digunakan
-* WordPress dikonfigurasi dengan WPGraphQL dan WPGraphQL for ACF
+* WordPress dikonfigurasi dengan REST API default dan REST API custom endpoints (jika diperlukan)
 * Shared hosting tetap dipertahankan (WordPress hanya sebagai CMS, bukan serving traffic)
 * Tim marketing mengelola konten
 * Frontend dihosting di Vercel

@@ -9,5 +9,5 @@ npm run dev
 
 Next steps:
 - Install UI libs: `npm i @shadcn/ui framer-motion`
-- Configure WPGraphQL adapter
+- Configure WordPress REST API connection
 - Implement pages and components per System Design
