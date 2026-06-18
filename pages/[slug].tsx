@@ -47,8 +47,12 @@ export const getStaticPaths: GetStaticPaths = async () => {
   const slugs = await getAllPostSlugs()
   // Filter slug terlarang agar tidak di-generate sebagai halaman artikel
   const safeSlugs = slugs.filter((slug) => !RESERVED_SLUGS.has(slug))
+  // Pre-generate hanya 20 artikel terbaru saat build.
+  // Sisa artikel di-generate on-demand (blocking) dan di-cache via ISR.
+  // Ini mengurangi build time dan menekan warning "large page data" massal.
+  const topSlugs = safeSlugs.slice(0, 20)
   return {
-    paths: safeSlugs.map((slug) => ({ params: { slug } })),
+    paths: topSlugs.map((slug) => ({ params: { slug } })),
     fallback: 'blocking',
   }
 }

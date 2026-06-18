@@ -1,6 +1,11 @@
+const path = require('path')
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+
+  // Perbaiki warning "multiple lockfiles" — pastikan Next.js tahu root project ini
+  outputFileTracingRoot: path.join(__dirname),
 
   images: {
     remotePatterns: [
