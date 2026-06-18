@@ -172,13 +172,21 @@ export async function getPosts(params?: PostsParams): Promise<PostsResult> {
     )
 
     return {
-      posts: data.map(normalizePost),
+      posts: data.map((p) => {
+        const np = normalizePost(p)
+        delete np.content
+        return np
+      }),
       pagination: { total, totalPages, currentPage: page, perPage },
     }
   } catch (err) {
     console.error('[wordpress.ts] getPosts failed:', err)
     return {
-      posts: getFallbackPosts(),
+      posts: getFallbackPosts().map((p) => {
+        const np = { ...p }
+        delete np.content
+        return np
+      }),
       pagination: { total: 3, totalPages: 1, currentPage: 1, perPage },
     }
   }
@@ -234,7 +242,11 @@ export async function getRelatedPosts(
       },
       21600
     )
-    return data.slice(0, limit).map(normalizePost)
+    return data.slice(0, limit).map((p) => {
+      const np = normalizePost(p)
+      delete np.content
+      return np
+    })
   } catch {
     return []
   }

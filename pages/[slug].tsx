@@ -180,7 +180,7 @@ export default function ArticleDetail({ post, relatedPosts }: Props) {
                 {post.excerpt}
               </p>
 
-              <div className="prose-wp" dangerouslySetInnerHTML={{ __html: post.content }} />
+              <div className="prose-wp" dangerouslySetInnerHTML={{ __html: post.content || '' }} />
 
               {/* Share bar */}
               <div className="mt-14 pt-8 border-t border-slate-200 flex flex-wrap items-center gap-4">

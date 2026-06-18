@@ -104,7 +104,7 @@ export type NormalizedPost = {
   slug: string
   title: string
   excerpt: string
-  content: string
+  content?: string
   date: string          // "10 Juni 2026" — display
   dateISO: string       // "2026-06-10T00:00:00" — schema / SEO
   modified: string
