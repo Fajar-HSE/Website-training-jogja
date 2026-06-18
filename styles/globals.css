@@ -82,16 +82,17 @@ p {
   @apply leading-relaxed text-slate-600 text-sm md:text-base;
 }
 
+/* btn-primary: amber/gold — CTA utama */
 .btn-primary {
-  @apply inline-flex items-center justify-center bg-accent-500 text-white px-7 py-3.5 rounded-2xl shadow-lg shadow-accent-500/20 transition-all transform hover:-translate-y-0.5 hover:shadow-xl hover:shadow-accent-500/30 focus:outline-none focus:ring-2 focus:ring-accent-500/50 active:translate-y-0 duration-150 font-bold tracking-wide;
+  @apply inline-flex items-center justify-center bg-[#F59E0B] text-white px-7 py-3.5 rounded-2xl shadow-lg shadow-[#F59E0B]/20 transition-all transform hover:-translate-y-0.5 hover:bg-[#e08e0a] hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#F59E0B]/50 active:translate-y-0 active:scale-95 duration-150 font-bold tracking-wide text-sm;
 }
 
 .btn-secondary {
-  @apply inline-flex items-center justify-center border-2 border-slate-200 text-slate-700 bg-white px-7 py-3.5 rounded-2xl hover:bg-slate-50 hover:border-slate-300 transition-all duration-150 font-bold tracking-wide;
+  @apply inline-flex items-center justify-center border-2 border-slate-200 text-slate-700 bg-white px-7 py-3.5 rounded-2xl hover:bg-slate-50 hover:border-slate-300 transition-all duration-150 font-bold tracking-wide text-sm;
 }
 
 .btn-secondary-dark {
-  @apply inline-flex items-center justify-center border-2 border-white/20 text-white bg-white/5 px-7 py-3.5 rounded-2xl hover:bg-white/10 hover:border-white/40 transition-all duration-150 font-bold tracking-wide;
+  @apply inline-flex items-center justify-center border-2 border-white/20 text-white bg-white/5 px-7 py-3.5 rounded-2xl hover:bg-white/10 hover:border-white/40 transition-all duration-150 font-bold tracking-wide text-sm;
 }
 
 .card {

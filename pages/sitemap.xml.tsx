@@ -64,7 +64,7 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
     entries.push(urlEntry(`${SITE_URL}${path}`, priority, changefreq, today))
   })
 
-  // Artikel — flat URL /[slug], priority tinggi karena SEO utama
+  // Artikel — flat URL /{slug} (mempertahankan URL yang sudah terindeks Google)
   postSlugs.forEach((slug) => {
     entries.push(urlEntry(`${SITE_URL}/${slug}`, '0.8', 'weekly'))
   })

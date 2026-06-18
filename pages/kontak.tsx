@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import Head from 'next/head'
 import Header from '../components/Header'
+import Footer from '../components/Footer'
 import Link from 'next/link'
 
 export default function Kontak() {
@@ -308,16 +309,7 @@ export default function Kontak() {
 
       </main>
 
-      <footer className="bg-slate-950 text-slate-400 py-12 border-t border-white/5">
-        <div className="mx-auto max-w-7xl px-6 flex flex-col md:flex-row justify-between items-center text-xs gap-4 text-slate-500">
-          <div>© {new Date().getFullYear()} HSE SkillUp. Semua hak dilindungi.</div>
-          <div className="flex gap-6">
-            <Link href="/" className="hover:text-slate-400">Beranda</Link>
-            <Link href="/layanan" className="hover:text-slate-400">Layanan</Link>
-            <Link href="/tentang-kami" className="hover:text-slate-400">Tentang Kami</Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </>
   )
 }

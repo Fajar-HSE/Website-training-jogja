@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import Head from 'next/head'
 import Header from '../components/Header'
-import Button from '../components/Button'
+import Footer from '../components/Footer'
 import Link from 'next/link'
 
 export default function Konsultasi() {
@@ -551,6 +551,8 @@ export default function Konsultasi() {
 
         </div>
       </main>
+
+      <Footer />
     </>
   )
 }

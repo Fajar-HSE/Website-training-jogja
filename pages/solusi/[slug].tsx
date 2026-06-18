@@ -3,14 +3,17 @@ import Image from 'next/image'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
 import SEO from '../../components/SEO'
-import { getSolutionBySlug, getAllSolutionSlugs, type GQLSolutionDetail } from '../../lib/wordpress'
+import { getSolutionBySlug, getAllSolutionSlugs, type WPSolution } from '../../lib/wordpress'
 import type { GetStaticPaths, GetStaticProps } from 'next'
 
-type Props = { solution: GQLSolutionDetail }
+type Props = { solution: WPSolution }
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const slugs = await getAllSolutionSlugs()
-  return { paths: slugs.map((slug) => ({ params: { slug } })), fallback: 'blocking' }
+  return {
+    paths: slugs.map((slug) => ({ params: { slug } })),
+    fallback: 'blocking',
+  }
 }
 
 export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
@@ -21,29 +24,53 @@ export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
 }
 
 function buildWAUrl(title: string) {
-  return `https://wa.me/6285328883511?text=${encodeURIComponent(`Halo Training Jogja, saya ingin konsultasi mengenai solusi ${title}.`)}`
+  return `https://wa.me/6285328883511?text=${encodeURIComponent(
+    `Halo Training Jogja, saya ingin konsultasi mengenai solusi ${title}.`
+  )}`
 }
 
 export default function SolusiDetail({ solution }: Props) {
-  const seoTitle = solution.seo?.title || `${solution.title} | Training Jogja`
-  const seoDesc = solution.seo?.metaDesc || solution.excerpt?.replace(/<[^>]+>/g, '').substring(0, 160) || `Pelajari solusi ${solution.title} dari Training Jogja.`
-  const seoImage = solution.seo?.opengraphImage?.sourceUrl || solution.featuredImage?.node.sourceUrl || '/images/hero.png'
-  const tagline = solution.solutionFields?.tagline ?? ''
-  const icon = solution.solutionFields?.icon ?? '🔧'
+  const acf = solution.acf
+  const media = solution._embedded?.['wp:featuredmedia']?.[0] ?? null
+  const seoData = solution.yoast_head_json
+
+  const title = solution.title.rendered
+  const excerpt = solution.excerpt.rendered.replace(/<[^>]+>/g, '')
+  const content = solution.content.rendered
+
+  const seoTitle = seoData?.title || `${title} | Training Jogja`
+  const seoDesc = seoData?.description || excerpt.substring(0, 160) || `Pelajari solusi ${title} dari Training Jogja.`
+  const seoImage = seoData?.og_image?.[0]?.url || media?.source_url || '/images/hero.png'
+  const canonical = seoData?.canonical
+
+  const tagline = acf?.tagline ?? ''
+  const icon = acf?.icon ?? '🔧'
 
   return (
     <>
-      <SEO title={seoTitle} description={seoDesc} ogImage={seoImage} ogType="article" canonical={solution.seo?.canonical} />
+      <SEO
+        title={seoTitle}
+        description={seoDesc}
+        ogImage={seoImage}
+        ogType="article"
+        canonical={canonical}
+      />
 
       <Header />
 
       <main className="bg-[#F8FAFC] text-[#1E293B] min-h-screen">
-
         {/* ── HERO ──────────────────────────────────────────────────────── */}
         <div className="relative bg-[#123458] text-white overflow-hidden">
-          {solution.featuredImage ? (
+          {media ? (
             <div className="relative h-[380px] md:h-[480px] w-full">
-              <Image src={solution.featuredImage.node.sourceUrl} alt={solution.featuredImage.node.altText || solution.title} fill priority className="object-cover" sizes="100vw" />
+              <Image
+                src={media.source_url}
+                alt={media.alt_text || title}
+                fill
+                priority
+                className="object-cover"
+                sizes="100vw"
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-[#123458] via-[#123458]/60 to-transparent" />
             </div>
           ) : (
@@ -57,12 +84,15 @@ export default function SolusiDetail({ solution }: Props) {
           )}
 
           <div className="relative z-10 mx-auto max-w-5xl px-6 pb-16 pt-8">
-            <nav className="flex items-center gap-2 text-xs text-slate-400 mb-8" aria-label="Breadcrumb">
+            <nav
+              className="flex items-center gap-2 text-xs text-slate-400 mb-8"
+              aria-label="Breadcrumb"
+            >
               <Link href="/" className="hover:text-white transition-colors">Beranda</Link>
               <span className="text-slate-600">/</span>
               <Link href="/solusi" className="hover:text-white transition-colors">Solusi</Link>
               <span className="text-slate-600">/</span>
-              <span className="text-slate-300 truncate max-w-[200px]">{solution.title}</span>
+              <span className="text-slate-300 truncate max-w-[200px]">{title}</span>
             </nav>
 
             {tagline && (
@@ -71,12 +101,12 @@ export default function SolusiDetail({ solution }: Props) {
               </span>
             )}
             <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight leading-tight text-white max-w-3xl">
-              {solution.title}
+              {title}
             </h1>
-            {solution.excerpt && (
-              <p className="mt-4 text-base md:text-lg text-slate-300 leading-relaxed max-w-2xl"
-                dangerouslySetInnerHTML={{ __html: solution.excerpt.replace(/<[^>]+>/g, '') }}
-              />
+            {excerpt && (
+              <p className="mt-4 text-base md:text-lg text-slate-300 leading-relaxed max-w-2xl">
+                {excerpt}
+              </p>
             )}
           </div>
         </div>
@@ -84,27 +114,39 @@ export default function SolusiDetail({ solution }: Props) {
         {/* ── BODY + SIDEBAR ────────────────────────────────────────────── */}
         <div className="mx-auto max-w-7xl px-6 py-16">
           <div className="grid gap-12 lg:grid-cols-[1fr_340px]">
-
             {/* Main content */}
             <article>
-              <div className="prose-wp" dangerouslySetInnerHTML={{ __html: solution.content || '' }} />
+              {content && (
+                <div className="prose-wp" dangerouslySetInnerHTML={{ __html: content }} />
+              )}
 
-              {solution.solutionFields?.manfaat && (
+              {acf?.manfaat && (
                 <div className="mt-10 rounded-2xl bg-[#2F6B3B]/5 border border-[#2F6B3B]/20 p-7">
                   <h2 className="text-xl font-bold text-[#123458] mb-4">Manfaat Utama</h2>
-                  <div className="prose-wp text-slate-700" dangerouslySetInnerHTML={{ __html: solution.solutionFields.manfaat }} />
+                  <div
+                    className="prose-wp text-slate-700"
+                    dangerouslySetInnerHTML={{ __html: acf.manfaat }}
+                  />
                 </div>
               )}
-              {solution.solutionFields?.proses && (
+
+              {acf?.proses && (
                 <div className="mt-8 rounded-2xl bg-slate-50 border border-slate-200 p-7">
                   <h2 className="text-xl font-bold text-[#123458] mb-4">Proses Implementasi</h2>
-                  <div className="prose-wp text-slate-700" dangerouslySetInnerHTML={{ __html: solution.solutionFields.proses }} />
+                  <div
+                    className="prose-wp text-slate-700"
+                    dangerouslySetInnerHTML={{ __html: acf.proses }}
+                  />
                 </div>
               )}
-              {solution.solutionFields?.regulasiTerkait && (
+
+              {acf?.regulasi_terkait && (
                 <div className="mt-8 rounded-2xl bg-[#123458]/5 border border-[#123458]/15 p-7">
                   <h2 className="text-xl font-bold text-[#123458] mb-4">Regulasi Terkait</h2>
-                  <div className="prose-wp text-slate-700" dangerouslySetInnerHTML={{ __html: solution.solutionFields.regulasiTerkait }} />
+                  <div
+                    className="prose-wp text-slate-700"
+                    dangerouslySetInnerHTML={{ __html: acf.regulasi_terkait }}
+                  />
                 </div>
               )}
             </article>
@@ -113,13 +155,26 @@ export default function SolusiDetail({ solution }: Props) {
             <aside>
               <div className="sticky top-24 space-y-6">
                 <div className="rounded-[28px] bg-gradient-to-br from-[#123458] to-[#0f2d4d] p-7 text-white shadow-xl shadow-[#123458]/20">
-                  <p className="text-xs uppercase tracking-widest text-green-300 font-bold">Butuh Bantuan?</p>
-                  <h3 className="mt-3 text-xl font-extrabold leading-snug">Konsultasikan Kebutuhan {solution.title} Anda</h3>
-                  <p className="mt-3 text-sm text-slate-300 leading-relaxed">Tim advisor kami siap membantu merancang roadmap implementasi yang sesuai dengan kondisi perusahaan Anda.</p>
-                  <Link href="/konsultasi" className="mt-6 block w-full rounded-xl bg-[#F59E0B] px-5 py-3 text-center text-sm font-bold text-white hover:bg-[#e08e0a] transition-all active:scale-95">
+                  <p className="text-xs uppercase tracking-widest text-green-300 font-bold">
+                    Butuh Bantuan?
+                  </p>
+                  <h3 className="mt-3 text-xl font-extrabold leading-snug">
+                    Konsultasikan Kebutuhan {title} Anda
+                  </h3>
+                  <p className="mt-3 text-sm text-slate-300 leading-relaxed">
+                    Tim advisor kami siap membantu merancang roadmap implementasi yang sesuai dengan
+                    kondisi perusahaan Anda.
+                  </p>
+                  <Link
+                    href="/konsultasi"
+                    className="mt-6 block w-full rounded-xl bg-[#F59E0B] px-5 py-3 text-center text-sm font-bold text-white hover:bg-[#e08e0a] transition-all active:scale-95"
+                  >
                     Jadwalkan Konsultasi ➔
                   </Link>
-                  <a href={buildWAUrl(solution.title)} target="_blank" rel="noopener noreferrer"
+                  <a
+                    href={buildWAUrl(title)}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="mt-3 flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-5 py-3 text-sm font-bold text-white hover:bg-white/10 transition-all"
                   >
                     💬 Chat WhatsApp
@@ -127,9 +182,20 @@ export default function SolusiDetail({ solution }: Props) {
                 </div>
 
                 <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
-                  <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">Solusi Lainnya</p>
-                  <Link href="/solusi" className="inline-flex items-center gap-2 text-sm font-bold text-[#123458] hover:text-[#2F6B3B] transition-colors">
-                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">
+                    Solusi Lainnya
+                  </p>
+                  <Link
+                    href="/solusi"
+                    className="inline-flex items-center gap-2 text-sm font-bold text-[#123458] hover:text-[#2F6B3B] transition-colors"
+                  >
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
                       <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                     </svg>
                     Lihat Semua Solusi
@@ -137,10 +203,8 @@ export default function SolusiDetail({ solution }: Props) {
                 </div>
               </div>
             </aside>
-
           </div>
         </div>
-
       </main>
 
       <Footer />

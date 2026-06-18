@@ -95,7 +95,7 @@ export default function ArticleDetail({ post, relatedPosts }: Props) {
       <SEO
         title={post.seo?.title || `${post.title} | Training Jogja`}
         description={post.seo?.metaDesc || post.excerpt}
-        ogImage={post.seo?.opengraphImage?.sourceUrl || post.featuredImage || '/images/hero.png'}
+        ogImage={post.seo?.ogImage || post.featuredImage || '/images/hero.png'}
         ogType="article"
         canonical={post.seo?.canonical}
         articleData={{

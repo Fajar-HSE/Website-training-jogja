@@ -12,11 +12,9 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   const content = `User-agent: *
 Allow: /
 
-# Blokir halaman admin dan API
+# Blokir halaman admin dan API internal
 Disallow: /admin/
 Disallow: /api/
-Disallow: /api/revalidate
-Disallow: /api/test-graphql
 
 # Sitemap
 Sitemap: ${SITE_URL}/sitemap.xml

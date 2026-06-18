@@ -3,30 +3,53 @@ import Image from 'next/image'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
 import SEO from '../../components/SEO'
-import { getSolutions, type GQLSolutionCard } from '../../lib/wordpress'
+import { getSolutions, type WPSolution } from '../../lib/wordpress'
 import type { GetStaticProps } from 'next'
 
 // ─── Fallback Data ────────────────────────────────────────────────────────────
 
-const FALLBACK_SOLUTIONS: GQLSolutionCard[] = [
-  { id: '1', slug: 'smk3', title: 'SMK3', excerpt: 'Sistem Manajemen Keselamatan dan Kesehatan Kerja sesuai PP 50/2012.', featuredImage: null, solutionFields: { tagline: 'Sertifikasi SMK3 PP 50/2012', icon: '🛡️' } },
-  { id: '2', slug: 'iso-14001', title: 'ISO 14001', excerpt: 'Standar manajemen lingkungan internasional untuk mengelola dampak lingkungan secara sistematis.', featuredImage: null, solutionFields: { tagline: 'Manajemen Lingkungan Internasional', icon: '🌿' } },
-  { id: '3', slug: 'iso-45001', title: 'ISO 45001', excerpt: 'Standar internasional sistem manajemen keselamatan dan kesehatan kerja.', featuredImage: null, solutionFields: { tagline: 'Keselamatan Kerja Standar Global', icon: '⚕️' } },
-  { id: '4', slug: 'pengelolaan-limbah-b3', title: 'Pengelolaan Limbah B3', excerpt: 'Solusi pengelolaan limbah bahan berbahaya dan beracun sesuai PP 22/2021.', featuredImage: null, solutionFields: { tagline: 'Pengelolaan Limbah Bahan Berbahaya', icon: '♻️' } },
-  { id: '5', slug: 'esg', title: 'ESG', excerpt: 'Kerangka Environmental, Social, and Governance untuk praktik bisnis berkelanjutan.', featuredImage: null, solutionFields: { tagline: 'Environmental, Social & Governance', icon: '📊' } },
+const FALLBACK_SOLUTIONS: WPSolution[] = [
+  {
+    id: 1, slug: 'smk3',
+    title: { rendered: 'SMK3' },
+    excerpt: { rendered: 'Sistem Manajemen Keselamatan dan Kesehatan Kerja sesuai PP 50/2012.' },
+    content: { rendered: '' },
+    featured_media: 0, date: '', modified: '', link: '',
+    acf: { tagline: 'Sertifikasi SMK3 PP 50/2012', icon: '🛡️' },
+  },
+  {
+    id: 2, slug: 'iso-14001',
+    title: { rendered: 'ISO 14001' },
+    excerpt: { rendered: 'Standar manajemen lingkungan internasional untuk mengelola dampak lingkungan.' },
+    content: { rendered: '' },
+    featured_media: 0, date: '', modified: '', link: '',
+    acf: { tagline: 'Manajemen Lingkungan Internasional', icon: '🌿' },
+  },
+  {
+    id: 3, slug: 'iso-45001',
+    title: { rendered: 'ISO 45001' },
+    excerpt: { rendered: 'Standar internasional sistem manajemen keselamatan dan kesehatan kerja.' },
+    content: { rendered: '' },
+    featured_media: 0, date: '', modified: '', link: '',
+    acf: { tagline: 'Keselamatan Kerja Standar Global', icon: '⚕️' },
+  },
+  {
+    id: 4, slug: 'pengelolaan-limbah-b3',
+    title: { rendered: 'Pengelolaan Limbah B3' },
+    excerpt: { rendered: 'Solusi pengelolaan limbah bahan berbahaya dan beracun sesuai PP 22/2021.' },
+    content: { rendered: '' },
+    featured_media: 0, date: '', modified: '', link: '',
+    acf: { tagline: 'Pengelolaan Limbah Bahan Berbahaya', icon: '♻️' },
+  },
+  {
+    id: 5, slug: 'esg',
+    title: { rendered: 'ESG' },
+    excerpt: { rendered: 'Kerangka Environmental, Social, and Governance untuk praktik bisnis berkelanjutan.' },
+    content: { rendered: '' },
+    featured_media: 0, date: '', modified: '', link: '',
+    acf: { tagline: 'Environmental, Social & Governance', icon: '📊' },
+  },
 ]
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-type Props = { solutions: GQLSolutionCard[] }
-
-// ─── Data Fetching ────────────────────────────────────────────────────────────
-
-export const getStaticProps: GetStaticProps<Props> = async () => {
-  const data = await getSolutions()
-  const solutions = data.length > 0 ? data : FALLBACK_SOLUTIONS
-  return { props: { solutions }, revalidate: false }
-}
 
 // ─── Icon gradient colors ─────────────────────────────────────────────────────
 
@@ -37,6 +60,21 @@ const ICON_COLORS = [
   'from-[#1a4d7a] to-[#123458]',
   'from-[#3d8a4d] to-[#2F6B3B]',
 ]
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+type Props = { solutions: WPSolution[]; total: number }
+
+// ─── Data Fetching ────────────────────────────────────────────────────────────
+
+export const getStaticProps: GetStaticProps<Props> = async () => {
+  const { solutions, pagination } = await getSolutions(1, 50)
+  const data = solutions.length > 0 ? solutions : FALLBACK_SOLUTIONS
+  return {
+    props: { solutions: data, total: pagination.total || data.length },
+    revalidate: false, // SSG + on-demand webhook
+  }
+}
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -53,7 +91,6 @@ export default function SolusiIndex({ solutions }: Props) {
       <Header />
 
       <main className="bg-[#F8FAFC] text-[#1E293B] min-h-screen">
-
         {/* ── HERO ─────────────────────────────────────────────────────── */}
         <section className="relative bg-[#123458] text-white overflow-hidden py-24">
           <div className="absolute inset-0 bg-gradient-to-br from-[#123458] via-[#0f2d4d] to-[#0a1f36]" />
@@ -69,13 +106,20 @@ export default function SolusiIndex({ solutions }: Props) {
               <span className="text-[#F59E0B]">untuk Bisnis Anda</span>
             </h1>
             <p className="mt-6 text-base md:text-lg leading-relaxed text-slate-300 max-w-2xl mx-auto">
-              Dari sertifikasi SMK3 hingga implementasi ESG, kami menyediakan solusi komprehensif yang disesuaikan dengan kebutuhan dan regulasi industri Anda.
+              Dari sertifikasi SMK3 hingga implementasi ESG, kami menyediakan solusi komprehensif
+              yang disesuaikan dengan kebutuhan dan regulasi industri Anda.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/konsultasi" className="inline-flex items-center justify-center rounded-xl bg-[#F59E0B] px-7 py-3 text-sm font-bold text-white shadow-lg hover:bg-[#e08e0a] transition-all active:scale-95">
+              <Link
+                href="/konsultasi"
+                className="inline-flex items-center justify-center rounded-xl bg-[#F59E0B] px-7 py-3 text-sm font-bold text-white shadow-lg hover:bg-[#e08e0a] transition-all active:scale-95"
+              >
                 Konsultasi Gratis
               </Link>
-              <a href="#solusi" className="inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/5 px-7 py-3 text-sm font-bold text-white hover:bg-white/10 transition-all">
+              <a
+                href="#solusi"
+                className="inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/5 px-7 py-3 text-sm font-bold text-white hover:bg-white/10 transition-all"
+              >
                 Lihat Semua Solusi ↓
               </a>
             </div>
@@ -106,16 +150,27 @@ export default function SolusiIndex({ solutions }: Props) {
         <section id="solusi" className="py-24 scroll-mt-20">
           <div className="mx-auto max-w-7xl px-6">
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <p className="text-xs uppercase tracking-[0.35em] text-[#2F6B3B] font-bold">Portofolio Solusi</p>
-              <h2 className="mt-4 text-3xl md:text-4xl font-extrabold text-[#123458]">Solusi yang Kami Tawarkan</h2>
-              <p className="mt-4 text-slate-600 text-base leading-relaxed">Setiap solusi dirancang khusus untuk tantangan nyata yang dihadapi industri — bukan solusi generik.</p>
+              <p className="text-xs uppercase tracking-[0.35em] text-[#2F6B3B] font-bold">
+                Portofolio Solusi
+              </p>
+              <h2 className="mt-4 text-3xl md:text-4xl font-extrabold text-[#123458]">
+                Solusi yang Kami Tawarkan
+              </h2>
+              <p className="mt-4 text-slate-600 text-base leading-relaxed">
+                Setiap solusi dirancang khusus untuk tantangan nyata yang dihadapi industri — bukan
+                solusi generik.
+              </p>
             </div>
 
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {solutions.map((solution, idx) => {
-                const tagline = solution.solutionFields?.tagline ?? ''
-                const icon = solution.solutionFields?.icon ?? '🔧'
+                const acf = solution.acf
+                const tagline = acf?.tagline ?? ''
+                const icon = acf?.icon ?? '🔧'
                 const gradientClass = ICON_COLORS[idx % ICON_COLORS.length]
+                const media = solution._embedded?.['wp:featuredmedia']?.[0] ?? null
+                const title = solution.title.rendered
+                const excerpt = solution.excerpt.rendered.replace(/<[^>]+>/g, '')
 
                 return (
                   <Link
@@ -123,11 +178,13 @@ export default function SolusiIndex({ solutions }: Props) {
                     href={`/solusi/${solution.slug}`}
                     className="group flex flex-col rounded-[28px] border border-slate-200/80 bg-white shadow-[0_20px_40px_-15px_rgba(18,52,88,0.08)] hover:shadow-[0_28px_56px_-15px_rgba(18,52,88,0.16)] hover:-translate-y-1 transition-all duration-300 overflow-hidden"
                   >
-                    <div className={`relative h-40 bg-gradient-to-br ${gradientClass} flex items-center justify-center overflow-hidden`}>
-                      {solution.featuredImage ? (
+                    <div
+                      className={`relative h-40 bg-gradient-to-br ${gradientClass} flex items-center justify-center overflow-hidden`}
+                    >
+                      {media ? (
                         <Image
-                          src={solution.featuredImage.node.sourceUrl}
-                          alt={solution.featuredImage.node.altText || solution.title}
+                          src={media.source_url}
+                          alt={media.alt_text || title}
                           fill
                           className="object-cover"
                           sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
@@ -145,17 +202,23 @@ export default function SolusiIndex({ solutions }: Props) {
                         </span>
                       )}
                       <h3 className="text-xl font-bold text-[#123458] group-hover:text-[#2F6B3B] transition-colors">
-                        {solution.title}
+                        {title}
                       </h3>
-                      {solution.excerpt && (
-                        <p className="mt-3 text-sm text-slate-600 leading-relaxed line-clamp-3"
-                          dangerouslySetInnerHTML={{ __html: solution.excerpt.replace(/<[^>]+>/g, '') }}
-                        />
+                      {excerpt && (
+                        <p className="mt-3 text-sm text-slate-600 leading-relaxed line-clamp-3">
+                          {excerpt}
+                        </p>
                       )}
                       <div className="mt-auto pt-6">
                         <span className="inline-flex items-center gap-1 text-sm font-bold text-[#123458] group-hover:text-[#2F6B3B] transition-colors">
                           Pelajari Selengkapnya
-                          <svg className="h-4 w-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <svg
+                            className="h-4 w-4 group-hover:translate-x-1 transition-transform"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
                             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                           </svg>
                         </span>
@@ -172,16 +235,27 @@ export default function SolusiIndex({ solutions }: Props) {
         <section className="relative bg-[#123458] py-24 text-white overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_rgba(47,107,59,0.3),_transparent_60%)] pointer-events-none" />
           <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
-            <p className="text-xs uppercase tracking-[0.35em] text-green-300 font-bold">Konsultasi Sekarang</p>
-            <h2 className="mt-4 text-3xl md:text-4xl font-extrabold text-white leading-tight">Tidak Yakin Solusi Mana yang Tepat?</h2>
-            <p className="mt-6 text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">Tim advisor kami siap membantu memetakan kebutuhan spesifik perusahaan Anda dan merekomendasikan solusi yang paling sesuai.</p>
+            <p className="text-xs uppercase tracking-[0.35em] text-green-300 font-bold">
+              Konsultasi Sekarang
+            </p>
+            <h2 className="mt-4 text-3xl md:text-4xl font-extrabold text-white leading-tight">
+              Tidak Yakin Solusi Mana yang Tepat?
+            </h2>
+            <p className="mt-6 text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
+              Tim advisor kami siap membantu memetakan kebutuhan spesifik perusahaan Anda dan
+              merekomendasikan solusi yang paling sesuai.
+            </p>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/konsultasi" className="inline-flex items-center justify-center rounded-xl bg-[#F59E0B] px-8 py-3.5 text-sm font-bold text-white shadow-lg hover:bg-[#e08e0a] transition-all active:scale-95">
+              <Link
+                href="/konsultasi"
+                className="inline-flex items-center justify-center rounded-xl bg-[#F59E0B] px-8 py-3.5 text-sm font-bold text-white shadow-lg hover:bg-[#e08e0a] transition-all active:scale-95"
+              >
                 Jadwalkan Konsultasi Gratis
               </Link>
               <a
                 href="https://wa.me/6285328883511?text=Halo%20Training%20Jogja,%20saya%20ingin%20konsultasi%20solusi%20K3%20untuk%20perusahaan%20saya."
-                target="_blank" rel="noopener noreferrer"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-8 py-3.5 text-sm font-bold text-white hover:bg-white/10 transition-all"
               >
                 Chat WhatsApp
@@ -189,7 +263,6 @@ export default function SolusiIndex({ solutions }: Props) {
             </div>
           </div>
         </section>
-
       </main>
 
       <Footer />

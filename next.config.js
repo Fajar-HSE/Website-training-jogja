@@ -10,7 +10,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: '*.gravatar.com', // avatar WordPress
+        hostname: '*.gravatar.com',
       },
       {
         protocol: 'https',
@@ -23,26 +23,33 @@ const nextConfig = {
     ],
   },
 
-  // Header keamanan dasar
-  async headers() {
-    return [
-      {
-        source: '/api/revalidate',
-        headers: [
-          { key: 'Cache-Control', value: 'no-store' },
-        ],
-      },
-    ]
-  },
-
-  // Redirect 301: URL lama WordPress → flat URL baru
-  // Menjaga ranking SEO artikel yang sudah terindeks
+  // Redirect 301 — jaga SEO artikel yang sudah terindeks Google
+  // Semua akses ke /resource-center/:slug diarahkan ke /:slug (flat URL asli)
   async redirects() {
     return [
       {
         source: '/resource-center/:slug',
         destination: '/:slug',
-        permanent: true, // 301
+        permanent: true, // 301 — Google transfer PageRank ke URL baru
+      },
+    ]
+  },
+
+  // Header keamanan & cache
+  async headers() {
+    return [
+      {
+        source: '/api/revalidate',
+        headers: [{ key: 'Cache-Control', value: 'no-store' }],
+      },
+      {
+        source: '/api/posts',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=21600, stale-while-revalidate=3600',
+          },
+        ],
       },
     ]
   },
